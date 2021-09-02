@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Openlibrary Search Tool</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div>
+      <div class="bg-top vh-100 d-flex flex-column justify-content-center align-items-center">
+        <div class="text-center pb-5"><h1 class="text-white">Command Line Echo</h1></div>
+        <div class="container col-8 p-0 rounded">
+          <div class="container bg-tab py-2 pl-4 rounded-top">
+            <span class="text-danger">●</span>
+            <span class="text-warning">●</span>
+            <span class="text-success">●</span>
+          </div>
+          <div id="CLIOutputDiv" class="container bg-container vh-60 p-3 overflow-auto"></div>
+          <div class="container rounded-bottom bg-tab input-group py-2">
+            <input type="text" class="form-control border-0 bg-transparent text-white" id="CLITextInput" placeholder="type any command" autocomplete="off" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="dist/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,57 @@
+body {
+  font-family: Monaco;
+}
+
+h1 {
+  font-family: Futura;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+.vh-60 {
+  height: 60vh;
+}
+
+.bg-top {
+  background: linear-gradient(#c9ba69, #611f2f);
+}
+
+.bg-tab {
+  background-color: #242424;
+}
+
+.bg-container {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.user-name {
+  color: #05eeff;
+}
+
+.atmark {
+  color: #fff;
+}
+
+.pc-name {
+  color: #ff05ff;
+}
+
+.command-input {
+  color: #fff;
+}
+
+.command-output {
+  color: #fff;
+  white-space: pre-line;
+}
+
+.prompt-success {
+  color: #33ff00;
+}
+
+.prompt-error {
+  color: #ff0000;
+}
