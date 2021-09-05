@@ -209,15 +209,6 @@ class BTools {
     return { isValid: true, errorMessage: "" };
   }
 
-  public static appendMirrorParagraph(parentDiv: HTMLDivElement) {
-    parentDiv.innerHTML += `
-      <p class="m-0 command-output"><span class='user-name'>student</span> <span class='atmark'>@</span> <span class='pc-name'>recursionist</span>: ${config.CLITextInput.value}
-      </p>
-    `;
-
-    return;
-  }
-
   public static queryStringFromParsedCLIArray(parsedCLIArray: string[]): string {
     let queryString = "";
 
@@ -262,6 +253,15 @@ class BTools {
 class View {
   public static addKeyboardEventListenerToCLI(commandList: CommandList) {
     config.CLITextInput.addEventListener("keydown", (event) => Controller.submitSearch(event, commandList));
+  }
+
+  public static appendMirrorParagraph(parentDiv: HTMLDivElement) {
+    parentDiv.innerHTML += `
+      <p class="m-0 command-output"><span class='user-name'>student</span> <span class='atmark'>@</span> <span class='pc-name'>recursionist</span>: ${config.CLITextInput.value}
+      </p>
+    `;
+
+    return;
   }
 
   public static appendResultParagraph(validatorResponse: ValidatorResponse) {
@@ -381,7 +381,7 @@ class Controller {
   public static async submitSearch(event: KeyboardEvent, commandList: CommandList) {
     if (event.key === "Enter") {
       Controller.addCommandToList(commandList);
-      BTools.appendMirrorParagraph(config.CLIOutputDiv);
+      View.appendMirrorParagraph(config.CLIOutputDiv);
       config.CLIOutputDiv.scrollTop = config.CLIOutputDiv.scrollHeight;
       if (config.CLITextInput.value === "") return;
 
