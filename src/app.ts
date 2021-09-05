@@ -4,6 +4,7 @@ const config = {
   url: "https://openlibrary.org/search",
 };
 
+// 型定義
 type ValidatorResponse = {
   isValid: boolean;
   errorMessage: string;
@@ -45,6 +46,7 @@ type AuthorDoc = {
   work_count: number;
 };
 
+// 入力されるコマンドのクラス
 class Command {
   private _data: string;
   private _next: Command | undefined;
@@ -81,6 +83,7 @@ class Command {
   }
 }
 
+// コマンドを格納する双方向連結リスト
 class CommandList {
   private _head: Command | undefined;
   private _tail: Command | undefined;
@@ -159,7 +162,7 @@ class BTools {
 
     let argsArray = parsedCLIArray.slice(2, parsedCLIArray.length);
 
-    // validators for each command
+    // 各コマンドに応じたバリデーションを実行
     if (parsedCLIArray[1] === "searchByTitle") {
       return BTools.searchByTitleValidator(argsArray);
     }
@@ -200,16 +203,11 @@ class BTools {
   static singleArgValidator(commandName: string, argsArray: string[]) {
     if (argsArray.length !== 1) return { isValid: false, errorMessage: `Invalid argument. '${commandName}' usage:\nBTools ${commandName} authorNameFragment` };
 
-    if (commandName === "uniqueNameCount") {
-    }
-
-    if (commandName === "titlesByUniqueName") {
-    }
-
     return { isValid: true, errorMessage: "" };
   }
 
-  public static queryStringFromParsedCLIArray(parsedCLIArray: string[]): string {
+  // parseした文字列からクエリ文字列を抽出する
+  public static queryStringFromParsedCLIArray(parsedCLIArray: string[]) {
     let queryString = "";
 
     if (parsedCLIArray[1] === "searchByTitle") {
@@ -223,6 +221,7 @@ class BTools {
     return queryString;
   }
 
+  // クエリを用いてAPIからデータ取得し、オブジェクトを返す
   public static async queryResponseObjectFromQueryString(queryString: string) {
     let queryResponseObject: Required<OpenlibraryResponse> = {
       numFound: 0,
@@ -282,6 +281,7 @@ class View {
     return;
   }
 
+  // APIから取得したオブジェクトを表示する
   public static appendResponseParagraphsFromQueryResponseObject(
     commandName: string,
     parentDiv: HTMLDivElement,
@@ -292,6 +292,7 @@ class View {
     else {
       parentDiv.innerHTML += `<p class="m-0 command-output"> <span class='prompt-success'>openLibrary</span>: at least ${queryResponseObject["docs"].length} matches`;
 
+      // 各コマンドによる表示の仕分け
       if (commandName === "searchByTitle") {
         View.appendResponseToSearchByTitle(parentDiv, queryResponseObject);
       }
@@ -355,6 +356,7 @@ class View {
     }
   }
 
+  // 入力したコマンドの履歴へのアクセス
   public static showPrevCommand(commandList: CommandList) {
     if (commandList.iterator === undefined) return;
     else {

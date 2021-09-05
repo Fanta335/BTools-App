@@ -4,6 +4,7 @@ const config = {
     CLIOutputDiv: document.getElementById("CLIOutputDiv"),
     url: "https://openlibrary.org/search",
 };
+// 入力されるコマンドのクラス
 class Command {
     constructor(commandInput) {
         this._data = commandInput;
@@ -29,6 +30,7 @@ class Command {
         this._prev = command;
     }
 }
+// コマンドを格納する双方向連結リスト
 class CommandList {
     constructor() {
         this._head = undefined;
@@ -90,7 +92,7 @@ class BTools {
             };
         }
         let argsArray = parsedCLIArray.slice(2, parsedCLIArray.length);
-        // validators for each command
+        // 各コマンドに応じたバリデーションを実行
         if (parsedCLIArray[1] === "searchByTitle") {
             return BTools.searchByTitleValidator(argsArray);
         }
@@ -123,19 +125,9 @@ class BTools {
     static singleArgValidator(commandName, argsArray) {
         if (argsArray.length !== 1)
             return { isValid: false, errorMessage: `Invalid argument. '${commandName}' usage:\nBTools ${commandName} authorNameFragment` };
-        if (commandName === "uniqueNameCount") {
-        }
-        if (commandName === "titlesByUniqueName") {
-        }
         return { isValid: true, errorMessage: "" };
     }
-    static appendMirrorParagraph(parentDiv) {
-        parentDiv.innerHTML += `
-      <p class="m-0 command-output"><span class='user-name'>student</span> <span class='atmark'>@</span> <span class='pc-name'>recursionist</span>: ${config.CLITextInput.value}
-      </p>
-    `;
-        return;
-    }
+    // parseした文字列からクエリ文字列を抽出する
     static queryStringFromParsedCLIArray(parsedCLIArray) {
         let queryString = "";
         if (parsedCLIArray[1] === "searchByTitle") {
@@ -149,6 +141,7 @@ class BTools {
         }
         return queryString;
     }
+    // クエリを用いてAPIからデータ取得し、オブジェクトを返す
     static async queryResponseObjectFromQueryString(queryString) {
         let queryResponseObject = {
             numFound: 0,
@@ -176,6 +169,13 @@ class View {
     static addKeyboardEventListenerToCLI(commandList) {
         config.CLITextInput.addEventListener("keydown", (event) => Controller.submitSearch(event, commandList));
     }
+    static appendMirrorParagraph(parentDiv) {
+        parentDiv.innerHTML += `
+      <p class="m-0 command-output"><span class='user-name'>student</span> <span class='atmark'>@</span> <span class='pc-name'>recursionist</span>: ${config.CLITextInput.value}
+      </p>
+    `;
+        return;
+    }
     static appendResultParagraph(validatorResponse) {
         let promptColor = "";
         let promptName = "BTools";
@@ -194,11 +194,13 @@ class View {
     `;
         return;
     }
+    // APIから取得したオブジェクトを表示する
     static appendResponseParagraphsFromQueryResponseObject(commandName, parentDiv, queryResponseObject) {
         if (queryResponseObject["docs"].length == 0)
             parentDiv.innerHTML += `<p class="m-0 command-output"> <span class='prompt-success'>openLibrary</span>: 0 matches </p>`;
         else {
             parentDiv.innerHTML += `<p class="m-0 command-output"> <span class='prompt-success'>openLibrary</span>: at least ${queryResponseObject["docs"].length} matches`;
+            // 各コマンドによる表示の仕分け
             if (commandName === "searchByTitle") {
                 View.appendResponseToSearchByTitle(parentDiv, queryResponseObject);
             }
@@ -249,6 +251,7 @@ class View {
             parentDiv.innerHTML += matchParagraphString;
         }
     }
+    // 入力したコマンドの履歴へのアクセス
     static showPrevCommand(commandList) {
         if (commandList.iterator === undefined)
             return;
@@ -274,7 +277,7 @@ class Controller {
     static async submitSearch(event, commandList) {
         if (event.key === "Enter") {
             Controller.addCommandToList(commandList);
-            BTools.appendMirrorParagraph(config.CLIOutputDiv);
+            View.appendMirrorParagraph(config.CLIOutputDiv);
             config.CLIOutputDiv.scrollTop = config.CLIOutputDiv.scrollHeight;
             if (config.CLITextInput.value === "")
                 return;
