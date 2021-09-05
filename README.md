@@ -8,48 +8,49 @@ https://btools-app.vercel.app/
 
 # Usage
 ## BTools
-MToolsは、シンプルな数学演算を行います。  
-コマンド、引数（半角数字）を入力することで演算の結果を得ることができます。
+BToolsは、Openlibrary APIにリクエストを送信することで、本を検索することができます。  
+コマンド、引数を入力することで検索の結果を得ることができます。  
+usage:
 ```
-$ MTools command argument_1 [argument_2]
+$ BTools command argument_1 [argument_2]
 ```
 
 ### Command List
 - searchByTitle
 - uniqueNameCount
-- titlesByUniqueName
+- topWorkByUniqueName
 
 <details>
 <summary>More command instructions</summary>
 <div>
 
 ## searchByTitle
-本のタイトルを引数として受け取り、タイトルに一致する本のすべての著者名とDBキーのリストを表示します。
+本のタイトルを引数として受け取り、タイトルに一致する本のすべての著者名とDBキーのリストを表示します。  
+また、本のタイトルに加えて1-100までの整数を引数にわたすことで、表示する数を指定することができます。
   
 usage:
 ```
-$ BTools searchByTitle book_title
+$ BTools searchByTitle book_title [maximumNumberOfResults]
 ```
 
 ## uniqueNameCount
-著者名の一部を引数にとり、その文字列を含む著者を表示します。
+著者名の一部を引数にとり、その文字列を含む著者のリストを表示します。
   
 usage:
 ```
 $ BTools uniqueNameCount author_name_fragment
 ```
 
-## titlesByUniqueName
-著者名の一部を引数として受け取り、その文字列に一致する著者が書いた代表作のタイトルを表示します。
+## topWorkByUniqueName
+著者名の一部を引数として受け取り、その文字列に一致する著者と、その代表作のタイトルのリストを表示します。
   
 usage:
 ```
-$ BTools titlesByUniqueName author_name_fragment
+$ BTools topWorkByUniqueName author_name_fragment
 ```
 
 </div>
 </details>
-<br>
 
 # Installation
 ```
