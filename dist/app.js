@@ -69,7 +69,7 @@ class CommandList {
 }
 class BTools {
     static commandLineParser(CLIInputString) {
-        let parsedArray = CLIInputString.split(" ");
+        let parsedArray = CLIInputString.trim().split(" ");
         return parsedArray;
     }
     static universalValidator(parsedCLIArray) {
@@ -136,25 +136,6 @@ class BTools {
     `;
         return;
     }
-    static appendResultParagraph(validatorResponse) {
-        console.log(validatorResponse);
-        let promptColor = "";
-        let promptName = "BTools";
-        if (validatorResponse["isValid"]) {
-            promptColor = "prompt-success";
-        }
-        else {
-            promptName += "Error";
-            promptColor = "prompt-error";
-        }
-        config.CLIOutputDiv.innerHTML += `
-      <p class="m-0">
-        <span class='${promptColor}'>${promptName}: </span><br>
-        <span class="command-output">${validatorResponse["errorMessage"]}</span>
-      </p><br>
-    `;
-        return;
-    }
     static queryStringFromParsedCLIArray(parsedCLIArray) {
         let queryString = "";
         if (parsedCLIArray[1] === "searchByTitle") {
@@ -179,67 +160,11 @@ class BTools {
             offset: null,
         };
         let queryURL = config.url + queryString;
-        console.log(queryString);
         await fetch(queryURL)
             .then((response) => response.json())
             .then((data) => (queryResponseObject = data))
             .catch((error) => console.log("Error: ", error));
         return queryResponseObject;
-    }
-    static appendResponseParagraphsFromQueryResponseObject(commandName, parentDiv, queryResponseObject) {
-        console.log(queryResponseObject);
-        // 一致するものがない場合は、その旨のメッセージをレンダリングします。
-        if (queryResponseObject["docs"].length == 0)
-            parentDiv.innerHTML += `<p class="m-0 command-output"> <span style='color:turquoise'>openLibrary</span>: 0 matches </p>`;
-        // 一致するものがあれば、それぞれを繰り返し処理し、著者、タイトル、最初の出版年、オブジェクトキー、ISBNを表示する段落を追加します。
-        else {
-            // 一致した数を表示
-            parentDiv.innerHTML += `<p class="m-0 command-output"> <span style='color:turquoise'>openLibrary</span>: at least ${queryResponseObject["docs"].length} matches`;
-            if (commandName === "searchByTitle") {
-                // 各マッチに対して、マッチした内容をパラグラフとしてparentDivに追加します。
-                for (let documentIndex = 0; documentIndex < queryResponseObject["docs"].length; documentIndex++) {
-                    // 各ドキュメントを js オブジェクトとして保存します。
-                    let queryResponseDocument = queryResponseObject["docs"][documentIndex];
-                    // 著者、タイトル、初版、キーを表しますが、ISBNではありません。
-                    let matchParagraphString = `<p class="m-0 command-output">
-          <span style='color:turquoise'>openLibrary</span>: [${documentIndex + 1}]<br>
-          author: ${queryResponseDocument["author_name"]}<br>
-          title: ${queryResponseDocument["title"]}<br>
-          first published: ${queryResponseDocument["first_publish_year"]}<br>
-          key: ${queryResponseDocument["key"]}<br>`;
-                    // 一致したオブジェクトがキー「isbn」を持っている場合は、isbn情報を含みます。
-                    if (queryResponseDocument.hasOwnProperty("isbn"))
-                        matchParagraphString += `ISBN: ${queryResponseDocument["isbn"][0]} </p>`;
-                    // そうでなければpタグを閉じます
-                    else
-                        matchParagraphString += `</p>`;
-                    parentDiv.innerHTML += matchParagraphString;
-                }
-            }
-            if (commandName === "uniqueNameCount") {
-                // 各マッチに対して、マッチした内容をパラグラフとしてparentDivに追加します。
-                for (let documentIndex = 0; documentIndex < queryResponseObject["docs"].length; documentIndex++) {
-                    // 各ドキュメントを js オブジェクトとして保存します。
-                    let queryResponseDocument = queryResponseObject["docs"][documentIndex];
-                    let matchParagraphString = `<p class="m-0 command-output">
-          <span style='color:turquoise'>openLibrary</span>: [${documentIndex + 1}]<br>
-          author_name: ${queryResponseDocument["name"]} `;
-                    matchParagraphString += `</p>`;
-                    parentDiv.innerHTML += matchParagraphString;
-                }
-            }
-            if (commandName === "titlesByUniqueName") {
-                for (let documentIndex = 0; documentIndex < queryResponseObject["docs"].length; documentIndex++) {
-                    let queryResponseDocument = queryResponseObject["docs"][documentIndex];
-                    let matchParagraphString = `<p class="m-0 command-output">
-          <span style='color:turquoise'>openLibrary</span>: [${documentIndex + 1}]<br>
-          author_name: ${queryResponseDocument["name"]}<br>top_work: ${queryResponseDocument["top_work"]} `;
-                    matchParagraphString += `</p>`;
-                    parentDiv.innerHTML += matchParagraphString;
-                }
-            }
-        }
-        return;
     }
     // 整数を表す文字列であるかを返す e.g. 1 -> true, 1.2 -> false, one -> false
     static isIntegerString(arg) {
@@ -250,6 +175,95 @@ class BTools {
 class View {
     static addKeyboardEventListenerToCLI(commandList) {
         config.CLITextInput.addEventListener("keydown", (event) => Controller.submitSearch(event, commandList));
+    }
+    static appendResultParagraph(validatorResponse) {
+        let promptColor = "";
+        let promptName = "BTools";
+        if (validatorResponse["isValid"]) {
+            promptColor = "prompt-success";
+        }
+        else {
+            promptName += "Error";
+            promptColor = "prompt-error";
+        }
+        config.CLIOutputDiv.innerHTML += `
+      <p class="m-0">
+        <span class='${promptColor}'>${promptName}: </span><br>
+        <span class="command-output">${validatorResponse["errorMessage"]}</span>
+      </p><br>
+    `;
+        return;
+    }
+    static appendResponseParagraphsFromQueryResponseObject(commandName, parentDiv, queryResponseObject) {
+        if (queryResponseObject["docs"].length == 0)
+            parentDiv.innerHTML += `<p class="m-0 command-output"> <span class='prompt-success'>openLibrary</span>: 0 matches </p>`;
+        else {
+            parentDiv.innerHTML += `<p class="m-0 command-output"> <span class='prompt-success'>openLibrary</span>: at least ${queryResponseObject["docs"].length} matches`;
+            if (commandName === "searchByTitle") {
+                View.appendResponseToSearchByTitle(parentDiv, queryResponseObject);
+            }
+            if (commandName === "uniqueNameCount") {
+                View.appendResponseToUniqueNameCount(parentDiv, queryResponseObject);
+            }
+            if (commandName === "titlesByUniqueName") {
+                View.appendResponseToTitlesByUniqueName(parentDiv, queryResponseObject);
+            }
+        }
+        return;
+    }
+    static appendResponseToSearchByTitle(parentDiv, queryResponseObject) {
+        for (let documentIndex = 0; documentIndex < queryResponseObject["docs"].length; documentIndex++) {
+            let queryResponseDocument = queryResponseObject["docs"][documentIndex];
+            let matchParagraphString = `<p class="m-0 command-output">
+      <span class='prompt-success'>openLibrary</span>: [${documentIndex + 1}]
+      author: ${queryResponseDocument["author_name"]}
+      title: ${queryResponseDocument["title"]}
+      first published: ${queryResponseDocument["first_publish_year"]}
+      key: ${queryResponseDocument["key"]}
+      `;
+            if (queryResponseDocument.hasOwnProperty("isbn"))
+                matchParagraphString += `ISBN: ${queryResponseDocument["isbn"][0]}</p>`;
+            else
+                matchParagraphString += `</p>`;
+            parentDiv.innerHTML += matchParagraphString;
+        }
+    }
+    static appendResponseToUniqueNameCount(parentDiv, queryResponseObject) {
+        for (let documentIndex = 0; documentIndex < queryResponseObject["docs"].length; documentIndex++) {
+            let queryResponseDocument = queryResponseObject["docs"][documentIndex];
+            let matchParagraphString = `<p class="m-0 command-output">
+      <span class='prompt-success'>openLibrary</span>: [${documentIndex + 1}]
+      author_name: ${queryResponseDocument["name"]} `;
+            matchParagraphString += `</p>`;
+            parentDiv.innerHTML += matchParagraphString;
+        }
+    }
+    static appendResponseToTitlesByUniqueName(parentDiv, queryResponseObject) {
+        for (let documentIndex = 0; documentIndex < queryResponseObject["docs"].length; documentIndex++) {
+            let queryResponseDocument = queryResponseObject["docs"][documentIndex];
+            let matchParagraphString = `<p class="m-0 command-output">
+      <span class='prompt-success'>openLibrary</span>: [${documentIndex + 1}]
+      author_name: ${queryResponseDocument["name"]}
+      top_work: ${queryResponseDocument["top_work"]} `;
+            matchParagraphString += `</p>`;
+            parentDiv.innerHTML += matchParagraphString;
+        }
+    }
+    static showPrevCommand(commandList) {
+        if (commandList.iterator === undefined)
+            return;
+        else {
+            config.CLITextInput.value = commandList.iterator.data;
+            commandList.iterator = commandList.iterator !== commandList.head ? commandList.iterator.prev : commandList.iterator;
+        }
+    }
+    static showNextCommand(commandList) {
+        if (commandList.iterator === undefined)
+            return;
+        else {
+            config.CLITextInput.value = commandList.iterator.data;
+            commandList.iterator = commandList.iterator !== commandList.tail ? commandList.iterator.next : commandList.iterator;
+        }
     }
 }
 class Controller {
@@ -268,7 +282,7 @@ class Controller {
             config.CLITextInput.value = "";
             let validatorResponse = BTools.universalValidator(parsedCLIArray);
             if (!validatorResponse["isValid"]) {
-                BTools.appendResultParagraph(validatorResponse);
+                View.appendResultParagraph(validatorResponse);
                 config.CLIOutputDiv.scrollTop = config.CLIOutputDiv.scrollHeight;
                 config.CLITextInput.value = "";
                 return;
@@ -276,36 +290,20 @@ class Controller {
             let queryString = BTools.queryStringFromParsedCLIArray(parsedCLIArray);
             config.CLIOutputDiv.scrollTop = config.CLIOutputDiv.scrollHeight;
             let queryResponseObject = await BTools.queryResponseObjectFromQueryString(queryString);
-            BTools.appendResponseParagraphsFromQueryResponseObject(parsedCLIArray[1], config.CLIOutputDiv, queryResponseObject);
+            View.appendResponseParagraphsFromQueryResponseObject(parsedCLIArray[1], config.CLIOutputDiv, queryResponseObject);
             config.CLIOutputDiv.scrollTop = config.CLIOutputDiv.scrollHeight;
         }
         else if (event.key === "ArrowUp") {
-            Controller.showPrevCommand(commandList);
+            View.showPrevCommand(commandList);
         }
         else if (event.key === "ArrowDown") {
-            Controller.showNextCommand(commandList);
+            View.showNextCommand(commandList);
         }
     }
     static addCommandToList(commandList) {
         if (config.CLITextInput.value === "")
             return;
         commandList.add(new Command(config.CLITextInput.value));
-    }
-    static showPrevCommand(commandList) {
-        if (commandList.iterator === undefined)
-            return;
-        else {
-            config.CLITextInput.value = commandList.iterator.data;
-            commandList.iterator = commandList.iterator !== commandList.head ? commandList.iterator.prev : commandList.iterator;
-        }
-    }
-    static showNextCommand(commandList) {
-        if (commandList.iterator === undefined)
-            return;
-        else {
-            config.CLITextInput.value = commandList.iterator.data;
-            commandList.iterator = commandList.iterator !== commandList.tail ? commandList.iterator.next : commandList.iterator;
-        }
     }
 }
 Controller.build();
