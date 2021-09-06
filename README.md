@@ -32,6 +32,20 @@ usage:
 ```
 $ BTools searchByTitle book_title [maximumNumberOfResults]
 ```
+本のタイトルは、'+'を用いることで複数の単語で検索することもできます。
+  
+e.g.
+```
+$ BTools searchByTitle the+lord+of+the+rings 1
+$ openLibrary: at least 1 matches
+$ openLibrary: [1]
+author: J.R.R. Tolkien
+title: The Lord of the Rings
+first published: 1950
+key: /works/OL27448W
+ISBN: 9780007124015
+
+```
 
 ## uniqueNameCount
 著者名の一部を引数にとり、その文字列を含む著者のリストを表示します。
