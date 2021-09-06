@@ -139,7 +139,7 @@ class BTools {
   }
 
   public static universalValidator(parsedCLIArray: string[]): ValidatorResponse {
-    const commandList = ["searchByTitle", "uniqueNameCount", "titlesByUniqueName"];
+    const commandList = ["searchByTitle", "uniqueNameCount", "topWorkByUniqueName"];
 
     if (parsedCLIArray[0] !== "BTools") {
       return {
@@ -171,8 +171,8 @@ class BTools {
       return BTools.singleArgValidator("uniqueNameCount", argsArray);
     }
 
-    if (parsedCLIArray[1] === "titlesByUniqueName") {
-      return BTools.singleArgValidator("titlesByUniqueName", argsArray);
+    if (parsedCLIArray[1] === "topWorkByUniqueName") {
+      return BTools.singleArgValidator("topWorkByUniqueName", argsArray);
     }
 
     return { isValid: true, errorMessage: "" };
@@ -214,7 +214,7 @@ class BTools {
       if (parsedCLIArray.length === 3) queryString = `.json?title=${parsedCLIArray[2]}`;
       else if (parsedCLIArray.length === 4) queryString = `.json?title=${parsedCLIArray[2]}&fields=*,availability&limit=${parsedCLIArray[3]}`;
     }
-    if (parsedCLIArray[1] === "uniqueNameCount" || parsedCLIArray[1] === "titlesByUniqueName") {
+    if (parsedCLIArray[1] === "uniqueNameCount" || parsedCLIArray[1] === "topWorkByUniqueName") {
       queryString = `/authors.json?q=${parsedCLIArray[2]}`;
     }
 
@@ -274,9 +274,9 @@ class View {
     }
     config.CLIOutputDiv.innerHTML += `
       <p class="m-0">
-        <span class='${promptColor}'>${promptName}: </span><br>
+        <span class='${promptColor}'>${promptName}: </span>
         <span class="command-output">${validatorResponse["errorMessage"]}</span>
-      </p><br>
+      </p>
     `;
     return;
   }
@@ -294,30 +294,30 @@ class View {
 
       // 各コマンドによる表示の仕分け
       if (commandName === "searchByTitle") {
-        View.appendResponseToSearchByTitle(parentDiv, queryResponseObject);
+        View.appendResponseParagraphSearchByTitle(parentDiv, queryResponseObject);
       }
 
       if (commandName === "uniqueNameCount") {
-        View.appendResponseToUniqueNameCount(parentDiv, queryResponseObject);
+        View.appendResponseParagraphUniqueNameCount(parentDiv, queryResponseObject);
       }
 
-      if (commandName === "titlesByUniqueName") {
-        View.appendResponseToTitlesByUniqueName(parentDiv, queryResponseObject);
+      if (commandName === "topWorkByUniqueName") {
+        View.appendResponseParagraphTopWorkByUniqueName(parentDiv, queryResponseObject);
       }
     }
     return;
   }
 
-  public static appendResponseToSearchByTitle(parentDiv: HTMLDivElement, queryResponseObject: Required<OpenlibraryResponse>) {
+  public static appendResponseParagraphSearchByTitle(parentDiv: HTMLDivElement, queryResponseObject: Required<OpenlibraryResponse>) {
     for (let documentIndex = 0; documentIndex < queryResponseObject["docs"].length; documentIndex++) {
       let queryResponseDocument = queryResponseObject["docs"][documentIndex] as TitleDoc;
 
-      let matchParagraphString = `<p class="m-0 command-output">
-      <span class='prompt-success'>openLibrary</span>: [${documentIndex + 1}]
-      author: ${queryResponseDocument["author_name"]}
-      title: ${queryResponseDocument["title"]}
-      first published: ${queryResponseDocument["first_publish_year"]}
-      key: ${queryResponseDocument["key"]}
+      let matchParagraphString = `
+        <p class="m-0 command-output"><span class='prompt-success'>openLibrary</span>: [${documentIndex + 1}]
+        author: ${queryResponseDocument["author_name"]}
+        title: ${queryResponseDocument["title"]}
+        first published: ${queryResponseDocument["first_publish_year"]}
+        key: ${queryResponseDocument["key"]}
       `;
 
       if (queryResponseDocument.hasOwnProperty("isbn")) matchParagraphString += `ISBN: ${queryResponseDocument["isbn"][0]}</p>`;
@@ -327,13 +327,14 @@ class View {
     }
   }
 
-  public static appendResponseToUniqueNameCount(parentDiv: HTMLDivElement, queryResponseObject: Required<OpenlibraryResponse>) {
+  public static appendResponseParagraphUniqueNameCount(parentDiv: HTMLDivElement, queryResponseObject: Required<OpenlibraryResponse>) {
     for (let documentIndex = 0; documentIndex < queryResponseObject["docs"].length; documentIndex++) {
       let queryResponseDocument = queryResponseObject["docs"][documentIndex] as AuthorDoc;
 
-      let matchParagraphString = `<p class="m-0 command-output">
-      <span class='prompt-success'>openLibrary</span>: [${documentIndex + 1}]
-      author_name: ${queryResponseDocument["name"]} `;
+      let matchParagraphString = `
+        <p class="m-0 command-output"><span class='prompt-success'>openLibrary</span>: [${documentIndex + 1}]
+        author_name: ${queryResponseDocument["name"]}
+      `;
 
       matchParagraphString += `</p>`;
 
@@ -341,12 +342,11 @@ class View {
     }
   }
 
-  public static appendResponseToTitlesByUniqueName(parentDiv: HTMLDivElement, queryResponseObject: Required<OpenlibraryResponse>) {
+  public static appendResponseParagraphTopWorkByUniqueName(parentDiv: HTMLDivElement, queryResponseObject: Required<OpenlibraryResponse>) {
     for (let documentIndex = 0; documentIndex < queryResponseObject["docs"].length; documentIndex++) {
       let queryResponseDocument = queryResponseObject["docs"][documentIndex] as AuthorDoc;
 
-      let matchParagraphString = `<p class="m-0 command-output">
-      <span class='prompt-success'>openLibrary</span>: [${documentIndex + 1}]
+      let matchParagraphString = `<p class="m-0 command-output"><span class='prompt-success'>openLibrary</span>: [${documentIndex + 1}]
       author_name: ${queryResponseDocument["name"]}
       top_work: ${queryResponseDocument["top_work"]} `;
 
